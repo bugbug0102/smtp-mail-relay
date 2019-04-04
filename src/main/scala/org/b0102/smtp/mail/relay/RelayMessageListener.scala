@@ -3,14 +3,13 @@ package org.b0102.smtp.mail.relay
 import org.subethamail.smtp.helper.SimpleMessageListener
 import java.io.InputStream
 import java.util.Properties
-import javax.mail.Session
-import javax.mail.Address
-import javax.mail.MessagingException
-import javax.mail.internet.MimeMessage
+
+import javax.mail._
+import javax.mail.internet.{InternetAddress, InternetHeaders, MimeMessage}
 import org.slf4j.LoggerFactory
 import javax.mail.Message.RecipientType
-import javax.mail.Transport
-import javax.mail.internet.InternetAddress
+
+import collection.JavaConverters._
 
 private[relay] class RelayMessageListener(private val relay:Relay) extends SimpleMessageListener
 {
@@ -23,7 +22,19 @@ private[relay] class RelayMessageListener(private val relay:Relay) extends Simpl
     props.put("mail.smtp.host", relay.host)
     props.put("mail.smtp.port", relay.port.toString())
     props.put("mail.transport.protocol", relay.protocol)
-    Session.getInstance(props)
+    
+    if(Option(relay.username).isDefined)
+    {
+  		props.put("mail.smtp.auth", "true")
+  		props.put("mail.smtp.starttls.enable", "true")
+      Session.getInstance(props, new Authenticator()
+      {
+        override def getPasswordAuthentication() = new PasswordAuthentication(relay.username, relay.password)
+      })
+    }else
+    {
+      Session.getInstance(props)  
+    }
   }
   
   private def recipientsToString(arr:Array[Address]):String = 
@@ -61,6 +72,11 @@ private[relay] class RelayMessageListener(private val relay:Relay) extends Simpl
         logger.debug(s"Old Subject\t:${oldSubject}")
         logger.debug(s"New Subject\t:${newSubject}")
         logger.debug(s"Recipient\t:${recipientRepresentation}")
+        logger.debug("Redirect to\t:{}", newRecipient)
+        mm.getAllHeaders.asScala.foreach{ h=>
+          val he = h.asInstanceOf[Header]
+          logger.debug("Header \t\t:{}->{}", Array(he.getName, he.getValue):_*)
+        }
       }
       
       Transport.send(mm, Array(new InternetAddress(newRecipient)))

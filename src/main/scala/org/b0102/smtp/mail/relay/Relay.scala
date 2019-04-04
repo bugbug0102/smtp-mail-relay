@@ -2,10 +2,12 @@ package org.b0102.smtp.mail.relay
 
 @SerialVersionUID(1L)
 private[relay] class Relay 
-  (val host:String, val port:Int, val protocol:String, val debug:Boolean, val redirect:String, val subjectPrefix:String)
+  (val host:String, val port:Int, val protocol:String
+      , val username:String, val password:String
+      , val debug:Boolean, val redirect:String, val subjectPrefix:String)
   extends Serializable with Equals
 {
-  def this() = this(null, -1, null, false, null, null) 
+  def this() = this(null, -1, null, null, null, false, null, null) 
   
   override def canEqual(other:Any) = other.isInstanceOf[Relay]
   
