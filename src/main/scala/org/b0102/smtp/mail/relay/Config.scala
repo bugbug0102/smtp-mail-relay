@@ -6,7 +6,7 @@ import java.util.Properties
 import org.apache.commons.lang3.{BooleanUtils, StringUtils}
 import org.apache.commons.lang3.math.NumberUtils
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.context.annotation.{Bean, Configuration}
+import org.springframework.context.annotation.{Bean, Configuration, PropertySource}
 import org.springframework.core.io.ClassPathResource
 import org.springframework.core.io.support.PropertiesLoaderUtils
 import org.subethamail.smtp.helper.{SimpleMessageListener, SimpleMessageListenerAdapter}
@@ -16,12 +16,13 @@ import scala.collection.JavaConverters._
 import scala.collection.mutable.ListBuffer
 import scala.util.control.Breaks.{break, breakable}
 
+@PropertySource(value= Array("classpath:smtp.mail.relay.properties"))
 @Configuration
 private[relay] class Config
 {
   private def getProperty(properties:Properties, key:String):String =
   {
-    val p = System.getProperty(key)
+    val p = System.getenv(key)
     if(StringUtils.isBlank(p)) properties.getProperty(key) else p
   }
 

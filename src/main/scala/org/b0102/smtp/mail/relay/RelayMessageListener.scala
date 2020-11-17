@@ -1,15 +1,15 @@
 package org.b0102.smtp.mail.relay
 
-import org.subethamail.smtp.helper.SimpleMessageListener
 import java.io.InputStream
 import java.util.Properties
 
-import javax.mail._
-import javax.mail.internet.{InternetAddress, InternetHeaders, MimeMessage}
-import org.slf4j.LoggerFactory
 import javax.mail.Message.RecipientType
+import javax.mail._
+import javax.mail.internet.{InternetAddress, MimeMessage}
+import org.slf4j.LoggerFactory
+import org.subethamail.smtp.helper.SimpleMessageListener
 
-import collection.JavaConverters._
+import scala.collection.JavaConverters._
 
 private[relay] class RelayMessageListener(private val relay:Relay) extends SimpleMessageListener
 {
@@ -78,8 +78,8 @@ private[relay] class RelayMessageListener(private val relay:Relay) extends Simpl
           logger.debug("Header \t\t:{}->{}", Array(he.getName, he.getValue):_*)
         }
       }
-      
-      Transport.send(mm, Array(new InternetAddress(newRecipient)))
+
+      Transport.send(mm, InternetAddress.parse(newRecipient).map(_.asInstanceOf[Address]))
       logger.debug("Sent")
       
     }catch

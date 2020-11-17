@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.b0102</groupId>
 	<artifactId>smtp-mail-relay</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.3-SNAPSHOT</version>
 	<name>SMTP Mail Relay </name>
 	<description>A Simple SMTP Server for forwarding email to an archive machine for development and testing</description>
 
